@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recommendation Table</title>
+    <!-- Add Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: #c9e4c5;
+        font-family: "Ubuntu", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container-fluid {
+        padding: 0;
+      }
+
+      .row {
+        margin: 0;
+      }
+
+      .sidebar {
+        background-color: #d0e775; /* Light green */
+        padding: 20px;
+        color: #fff;
+      }
+
+      .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar li {
+        margin-bottom: 10px;
+      }
+
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .table-container {
+        overflow-y: scroll;
+        height: 400px;
+        position: relative;
+      }
+
+      .table {
+        border: 2px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .table th {
+        background-color: #343a40;
+        color: #fff;
+      }
+
+      .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f2f2;
+      }
+
+      .drag-handle {
+        width: 10px;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: -5px;
+        cursor: ew-resize;
+        background-color: rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-2 sidebar">
+          <ul>
+            <li><a href="/home">Home</a></li>
+            <li><a href="/logout">Log-out</a></li>
+          </ul>
+        </div>
+        <div class="col-md-10 content">
+          <div class="container">
+            <h2>Recommendation Table</h2>
+            <div class="table-container">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Recommendation ID</th>
+                    <th>Crop Name</th>
+                    <th>User ID</th>
+                    <th>Recommendation_Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in recommendation %}
+                  <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2]}}</td>
+                    <td>{{ row[3]}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="drag-handle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Bootstrap JS (optional, for advanced functionality) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var tableContainer = document.querySelector(".table-container");
+        var dragHandle = document.querySelector(".drag-handle");
+
+        var isDragging = false;
+        var initialHeight = 400;
+        var minHeight = 100;
+
+        dragHandle.addEventListener("mousedown", function (event) {
+          event.preventDefault();
+          isDragging = true;
+          initialHeight = tableContainer.offsetHeight;
+        });
+
+        document.addEventListener("mousemove", function (event) {
+          if (isDragging) {
+            var newHeight =
+              initialHeight -
+              event.clientY +
+              tableContainer.getBoundingClientRect().top;
+            if (newHeight >= minHeight) {
+              tableContainer.style.height = newHeight + "px";
+            }
+          }
+        });
+
+        document.addEventListener("mouseup", function () {
+          isDragging = false;
+        });
+      });
+    </script>
+  </body>
+</html>

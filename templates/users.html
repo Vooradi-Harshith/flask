@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Users</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js"
+      integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+      integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        background-color: #f0f8e6;
+        font-family: "Ubuntu", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dashboard {
+        display: flex;
+        height: 100vh;
+      }
+
+      .sidebar {
+        width: 200px;
+        background-color: #d0e775; /* Light green */
+        padding: 20px;
+        color: #fff;
+      }
+
+      .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar li {
+        margin-bottom: 10px;
+      }
+
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px;
+      }
+
+      .dashboard-buttons {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .dashboard-button {
+        padding: 16px 32px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        margin: 0 10px;
+        cursor: pointer;
+      }
+
+      .new-recommendation-button {
+        background-color: #4caf50; /* Green */
+        color: #fff;
+      }
+
+      .past-recommendations-button {
+        background-color: #ffff00; /* Yellow */
+        color: #000;
+      }
+
+      .table-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .graph-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 300px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+      }
+
+      .users-table {
+        margin-top: 20px;
+      }
+
+      .user-link {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="sidebar">
+        <ul>
+          <li><a href="/home">Home</a></li>
+          <li><a href="#" onclick="showPastRecommendations()">users</a></li>
+          <li><a href="/logout">Log-out</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <h1>USERS DETAILS</h1>
+        <div class="container mt-4">
+          <h1>Manage Users</h1>
+          <form id="myForm" action="/delete-users" method="post">
+            <input
+              type="hidden"
+              id="selectedValues"
+              name="selectedValues"
+              value=""
+            />
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Name</th>
+                  <th>No. of Recommendations</th>
+                  <th>Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>
+                    <a onclick="retrieveUserId('{{user[0]}}')" class="user-link"
+                      >{{ user[0] }}</a
+                    >
+                  </td>
+                  <td>{{ user[1] }}</td>
+                  <td>{{ user[2] }}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="selectedUsers"
+                      value="{{ user[0] }}"
+                    />
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button onclick="retrieveSelectedRadios()" class="btn btn-danger">
+              Delete Selected Users
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function retrieveSelectedRadios() {
+        var radios = document.querySelectorAll('input[type="checkbox"]');
+        var selectedValues = [];
+
+        radios.forEach(function (radio) {
+          if (radio.checked) {
+            selectedValues.push(radio.value);
+          }
+        });
+
+        if (selectedValues.length === 0) {
+          alert("Please select at least one user.");
+          return;
+        }
+
+        document.getElementById("selectedValues").value =
+          selectedValues.join(",");
+        console.log(selectedValues);
+        // Submit the form
+        document.getElementById("myForm").submit();
+      }
+
+      function retrieveUserId(userId) {
+        // Create a hidden form and append the user_id input field
+        var form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/show_users";
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "user_id";
+        input.value = userId;
+        form.appendChild(input);
+        // Append the form to the body and submit it
+        document.body.appendChild(form);
+        form.submit();
+      }
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
+  </body>
+</html>

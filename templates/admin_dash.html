@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js"
+      integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+      integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc"
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      body {
+        background-color: #f0f8e6;
+        font-family: "Ubuntu", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dashboard {
+        display: flex;
+        height: 100vh;
+      }
+
+      .sidebar {
+        width: 200px;
+        background-color: #d0e775; /* Light green */
+        padding: 20px;
+        color: #fff;
+      }
+
+      .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar li {
+        margin-bottom: 10px;
+      }
+
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px;
+      }
+
+      .dashboard-buttons {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .dashboard-button {
+        padding: 16px 32px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        margin: 0 10px;
+        cursor: pointer;
+      }
+
+      .new-recommendation-button {
+        background-color: #4caf50; /* Green */
+        color: #fff;
+      }
+
+      .past-recommendations-button {
+        background-color: #ffff00; /* Yellow */
+        color: #000;
+      }
+
+      .table-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .graph-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 300px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+      }
+
+      .users-table {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="sidebar">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#" onclick="showGraph()">Users</a></li>
+          <li><a href="#" onclick="showRecGraph()">Recommendation</a></li>
+          <li><a href="/user_render">User_manage</a></li>
+          <li><a href="/rec">Recommendations</a></li>
+
+          <li><a href="/logout">Log-out</a></li>
+        </ul>
+      </div>
+
+      <div class="content">
+        <h1>Welcome to Admin Dashboard</h1>
+        <h3 style="color: #4caf50">
+          USER ANALYTICS <i class="icon fa-solid fa-chart-line"></i>
+        </h3>
+
+        <div class="graph-container" id="graphContainer">
+          <!-- Graph component will be rendered here -->
+          <canvas id="usersChart"></canvas>
+        </div>
+
+        <h3 style="color: #4caf50">
+          RECOMMENDATION ANALYTICS <i class="icon fa-solid fa-chart-line"></i>
+        </h3>
+
+        <div class="graph-container" id="graphContainer1">
+          <canvas id="usersChart1"></canvas>
+        </div>
+
+        <div
+          class="table-container users-table"
+          id="usersTableContainer"
+          style="display: none"
+        >
+          <table class="table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Crop Name</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
+    <script>
+      function showGraph() {
+        var graphContainer = document.getElementById("graphContainer");
+        var usersTableContainer = document.getElementById(
+          "usersTableContainer"
+        );
+
+        graphContainer.style.display = "flex";
+        usersTableContainer.style.display = "none";
+
+        // Simulated data for demonstration
+
+        fetch("/users-data")
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            renderGraph(data);
+          });
+
+        //renderGraph(usersData);
+      }
+      function showRecGraph() {
+        var graphContainer = document.getElementById("graphContainer");
+        var usersTableContainer = document.getElementById(
+          "usersTableContainer"
+        );
+
+        graphContainer.style.display = "flex";
+        usersTableContainer.style.display = "none";
+
+        // Simulated data for demonstration
+
+        fetch("/rec-data")
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            renderGraph1(data);
+          });
+      }
+
+      function showUsers() {
+        var graphContainer = document.getElementById("graphContainer");
+        var usersTableContainer = document.getElementById(
+          "usersTableContainer"
+        );
+
+        graphContainer.style.display = "none";
+        usersTableContainer.style.display = "block";
+      }
+      function renderGraph1(usersData) {
+        var ctx = document.getElementById("usersChart1").getContext("2d");
+        var labels = usersData.map(function (data) {
+          return data.date;
+        });
+        var values = usersData.map(function (data) {
+          return data.count;
+        });
+
+        var chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Number of Recommendations",
+                data: values,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                stepSize: 5,
+              },
+            },
+          },
+        });
+      }
+      function renderGraph(usersData) {
+        var ctx = document.getElementById("usersChart").getContext("2d");
+        var labels = usersData.map(function (data) {
+          return data.date;
+        });
+        var values = usersData.map(function (data) {
+          return data.numUsers;
+        });
+
+        var chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Number of Users",
+                data: values,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                stepSize: 5,
+              },
+            },
+          },
+        });
+      }
+      // showGraph();
+    </script>
+  </body>
+</html>
